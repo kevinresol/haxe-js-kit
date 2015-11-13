@@ -25,6 +25,7 @@ implements npm.Package.RequireNamespace<"stream","*">
   function destroySoon():Void;
   function setEncoding(enc:String):Void;
   function pipe(dest:IWritable,?opts:{end:Bool}):Void;
+  function unpipe(?dest:IWritable):Void;
   function new(?opt:Dynamic):Void;
 
   @:overload(function(chunk:Buffer) : Bool {})
@@ -42,4 +43,5 @@ extends IEventEmitter
   function destroySoon():Void;
   function setEncoding(enc:String):Void;
   function pipe(dest:IWritable,?opts:{end:Bool}):Void;
+  function unpipe(?dest:IWritable):Void;
 }

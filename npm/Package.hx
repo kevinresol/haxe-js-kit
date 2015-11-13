@@ -25,7 +25,7 @@ class Package {
 		Context.onGenerate( function(_){
 			if( dependencies == null ) return;
 			var data : Dynamic = {}
-			
+
 			if( sys.FileSystem.exists(path) ){
 				data = Json.parse( File.getContent(path) );
 			}
@@ -49,20 +49,20 @@ class Package {
 		});
 	}
 	#end
-	
+
 	#if haxe3 macro #else @:macro #end public static function require( name : String , ?version : String = "*" , ?isNpm : Bool = true , ?native : String = null ) {
-		
+
 		if( dependencies == null ){
 			dependencies = new #if haxe3 Map #else Hash #end();
 		}
-		
+
 		var nameExpr = Context.makeExpr( name , Context.currentPos() );
-		
+
 		if( isNpm )
 			addDependency( name, version );
 
 		var outp = macro __js__("require")( $nameExpr );
-		
+
 		if( native != null ){
 			for( p in native.split(".") ){
 				var pExpr = Context.makeExpr( p , Context.currentPos() );
@@ -72,7 +72,7 @@ class Package {
 		}
 
 		return macro untyped $outp;
-		
+
 	}
 
 	public static function addDependency( name : String , version : String ) : Void {
@@ -87,8 +87,8 @@ class Package {
 
 		return macro $expr;
 	}
-	
-	
+
+
 }
 
 #if !macro extern #end class Include {
@@ -107,7 +107,7 @@ class Package {
 	#end
 
 	#if haxe3 macro #else @:macro #end public static function build() : Array<Field>{
-		
+
 		var cl = Context.getLocalClass().get();
 		var fields = Context.getBuildFields();
 		var required : Pack = null;
@@ -118,10 +118,10 @@ class Package {
 		// see if the type has already been processed
 		if( cl.meta.has(NPM_DONE_META) )
 			return fields;
-	
+
 		// mark the type as processed
 		cl.meta.add( NPM_DONE_META , [] , pos );
-		
+
 		// extract infos from the implemented interfaces
 		/*t.module == NPM_PACKAGE_MODULE
 				&& ( t.name == NPM_CLASS_REQUIRE || t.name == NPM_CLASS_REQUIRE_NAMESPACE ) */
@@ -141,8 +141,8 @@ class Package {
 
 			// exclude local files
 			isNpm = isNpm && !( StringTools.startsWith(required.name,'/') || StringTools.startsWith(required.name,'./') );
-			
-			// set the generated class name 
+
+			// set the generated class name
 			var clName = if( !Context.defined( NPM_OPTION_FULL_PATH ) )
 				// if minified
 				cl.name+SEP+(requireId++);
@@ -158,7 +158,7 @@ class Package {
 
 			if( requireNS ){
 				// if the package is a namespace
-				
+
 				// check for :native class name
 				var _nativeName = util.Macro.extractNative( cl );
 				if( _nativeName != null ){
@@ -188,7 +188,7 @@ class Package {
 					native = native + '.${nativeClass}';
 				}
 				native = '($clName||' + native + ')';
-				
+
 				cl.meta.add(":native",[macro $v{native}], pos);
 
 				// inject the initiatization code in __init__
@@ -237,23 +237,23 @@ class Package {
 					fields.push(f);
 				}
 			}
-			
+
 		}
 
 		return fields;
 	}
-	
+
 }
 
 @:autoBuild(npm.Include.build())
-#if (haxe_ver > 3.2)
+#if (haxe_ver == 3.2)
 extern interface Require<@:const P,@:const V> {}
 #else
 extern interface Require<Const,Const> {}
 #end
 
 @:autoBuild(npm.Include.build())
-#if (haxe_ver > 3.2)
+#if (haxe_ver == 3.2)
 extern interface RequireNamespace<@:const P,@:const V> {}
 #else
 extern interface RequireNamespace<Const,Const> {}

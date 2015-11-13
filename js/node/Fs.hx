@@ -90,6 +90,7 @@ implements npm.Package.Require<"fs","*">
   static function readFileSync(path:String):Buffer;
 
   @:overload(function(fileName:String,data:EitherType<String, Buffer>):Void {})
+  @:overload(function(fileName:String,data:EitherType<String, Buffer>,cb:Callback0):Void{})
   @:overload(function(fileName:String,data:EitherType<String, Buffer>,options:FsWriteFileOpt):Void {})
   static function writeFile(fileName:String,data:EitherType<String, Buffer>,options:FsWriteFileOpt,cb:Callback0):Void;
   @:overload(function(fileName:String,data:Buffer,options:FsWriteFileOpt):Void {})
