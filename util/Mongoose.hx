@@ -464,6 +464,10 @@ class Mongoose {
 					var val = m.params[0];
 
 					fields.push( { field : mname , expr : macro $val } );
+                    
+                case "optional":
+                    // do nothing
+                    
 				default :
 					fields.push( {field : mname , expr : m.params.length == 0 ? macro true : m.params[0] } );
 			}
