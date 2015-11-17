@@ -84,8 +84,8 @@ implements npm.Package.Require<"fs","*">
   static function truncateSync(fd:Int,len:Int):Error;
   
   @:overload(function(path:String,options:FsReadFileOpt,cb:Callback<Buffer>):Void {})
-  @:overload(function(path:String,options:FsReadFileOpt,cb:Callback<String>):Void {})
-  static function readFile(path:String,cb:Callback<Buffer>):Void;
+  @:overload(function(path:String,cb:Callback<Buffer>):Void {})
+  static function readFile(path:String,options:FsReadFileOpt,cb:Callback<String>):Void;
   @:overload(function(path:String,options:FsReadFileOpt):String {})
   static function readFileSync(path:String):Buffer;
 
