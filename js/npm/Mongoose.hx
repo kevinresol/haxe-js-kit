@@ -4,7 +4,7 @@ import js.npm.mongoose.*;
 import js.support.Callback;
 
 extern class Mongoose
-implements npm.Package.Require<"mongoose","^4.0.0"> {
+implements npm.Package.Require<"mongoose","^4.2.2"> {
 
 	/**
 	

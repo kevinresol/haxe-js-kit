@@ -47,5 +47,6 @@ typedef SchemaOptions = {
 	?strict : Bool,
 	?toJSON : Dynamic,
 	?toObject : Dynamic,
-	?versionKey : Bool
+	?versionKey : Bool,
+	?typeKey : String,
 }

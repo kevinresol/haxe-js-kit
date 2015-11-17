@@ -58,10 +58,6 @@ class Mongoose {
 
 		switch(modelDecl){
 			case TAnonymous( a ):
-				var schemaDef = {
-					expr : anonTypeToSchemaDef( a.get() ),
-					pos : pos
-				};
 
 				// add "make" method
 				fields.push({
@@ -179,12 +175,29 @@ class Mongoose {
                 }
             }
         }
+        
+        var typeKey = "$type";
+        switch(schemaOptions.expr) {
+            case EObjectDecl(fields): 
+                var typeKeyField = Lambda.find(fields, function(f) return f.field == 'typeKey');
+                if(typeKeyField == null) {
+                    fields.push({field: 'typeKey', expr: macro $v{typeKey}});
+                } else {
+                    typeKey = switch(typeKeyField.expr.expr) {
+                        case EConst(CString(s)): s;
+                        default: throw "typeKey should be string literal";
+                    }
+                }
+                    
+            default:
+        }
+        
 
 		switch(modelDecl){
 			case TAnonymous( a ):
 
 				var schemaDef = {
-					expr : anonTypeToSchemaDef( a.get() ),
+					expr : anonTypeToSchemaDef( a.get(), typeKey ),
 					pos : pos
 				};
 
@@ -300,11 +313,11 @@ class Mongoose {
 		return fields;
 	}
 
-	static function anonTypeToSchemaDef( a : AnonType ) : ExprDef {
+	static function anonTypeToSchemaDef( a : AnonType, typeKey:String ) : ExprDef {
 		var fields : Array<{ field : String, expr : haxe.macro.Expr }> = [];
 
 		for( f in a.fields ){
-			fields.push( classFieldToSchemaField(f) );
+			fields.push( classFieldToSchemaField(f, typeKey) );
 		}
 
 		var objDecl = EObjectDecl( fields );
@@ -312,21 +325,22 @@ class Mongoose {
 		return objDecl;
 	}
 
-	static function classFieldToSchemaField( f : ClassField ){
+	static function classFieldToSchemaField( f : ClassField, typeKey:String ){
 
 		var type = {
 			pos : f.pos,
-			expr : typeToSchemaType(f.type)
+			expr : typeToSchemaType(f.type, typeKey)
 		};
-
-		var expr = macro { type : $type };
+        
+        if(typeKey.substr(0, 1) == "$")
+            typeKey = "@$__hx__" + typeKey; 
+		var expr = macro { $typeKey: $type };
 
 		var fields = switch(expr.expr){
 			case EObjectDecl( fields ) : fields;
 			default : throw "assert";
 		}
 
-		//trace(type.expr);
 		switch(type.expr){
 			case EArrayDecl([v]):
 				if( f.meta.has(':ref') ){
@@ -476,11 +490,11 @@ class Mongoose {
 		return { field : f.name , expr : expr };
 	}
 
-	static function typeToSchemaType( type : Type ) : ExprDef {
+	static function typeToSchemaType( type : Type, typeKey:String ) : ExprDef {
 		//trace(type);
 		switch( haxe.macro.TypeTools.follow(type) ){
 			case TAnonymous( a ) :
-				return anonTypeToSchemaDef( a.get() );
+				return anonTypeToSchemaDef( a.get(), typeKey );
 
 			case TInst( t , params ) :
 				var i = t.get();
@@ -490,7 +504,7 @@ class Mongoose {
 					case "String" :
 						macro untyped __js__('String');
 					case "Array" : // TODO handle DocumentArray etc
-						var t = { expr : typeToSchemaType(params[0]) , pos : Context.currentPos() };
+						var t = { expr : typeToSchemaType(params[0], typeKey) , pos : Context.currentPos() };
 						macro [$t];
 					case "Date" :
 						macro untyped __js__('Date');
@@ -504,7 +518,7 @@ class Mongoose {
 
 							for( f in i.fields.get() ){
 								 if( f.name == '_id' ){
-								 	return typeToSchemaType(f.type);
+								 	return typeToSchemaType(f.type, typeKey);
 								 }
 							}
 
