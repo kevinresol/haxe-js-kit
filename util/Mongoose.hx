@@ -331,16 +331,15 @@ class Mongoose {
 			pos : f.pos,
 			expr : typeToSchemaType(f.type, typeKey)
 		};
-
-		var expr = macro { dummy:1 };
+        
+        if(typeKey.substr(0, 1) == "$")
+            typeKey = "@$__hx__" + typeKey; 
+		var expr = macro { $typeKey: $type };
 
 		var fields = switch(expr.expr){
 			case EObjectDecl( fields ) : fields;
 			default : throw "assert";
 		}
-        
-        fields.pop();
-        fields.push({field: typeKey.substr(0, 1) == "$" ? "@$__hx__" + typeKey : typeKey, expr: macro $type});
 
 		switch(type.expr){
 			case EArrayDecl([v]):
