@@ -118,10 +118,10 @@ extern class TModels<T,M:TModel<T>> {
 
 	public function mapReduce( o : ModelMapReduce , callback : Callback2<Array<M>,{}> ) : Void;
 
-	@:overload( function( c1 : {} , c2 : {} , c3 : {} , options : {} , callback : Callback<{}> ) : Void {} )
-	@:overload( function( c1 : {} , c2 : {} , options : {} , callback : Callback<{}> ) : Void {} )
-	@:overload( function( commands : {} , options : {} , callback : Callback<{}> ) : Void {} )
-	public function aggregate( commands : {} , callback : Callback<{}> ) : Void;
+	@:overload( function( c1 : {} , c2 : {} , c3 : {} , options : {} , callback : Callback<Array<{}>> ) : Void {} )
+	@:overload( function( c1 : {} , c2 : {} , options : {} , callback : Callback<Array<{}>> ) : Void {} )
+	@:overload( function( commands : {} , options : {} , callback : Callback<Array<{}>> ) : Void {} )
+	public function aggregate( commands : {} , callback : Callback<Array<{}>> ) : Void;
 
 	@:overload(function( doc : {} , options : {} , cb : Callback<M> ) : Void {} )
 	public function populate( docs : Array<{}> , options : {} , cb : Callback<Array<M>> ) : Void;
