@@ -17,7 +17,7 @@ interface SoapSecurity {
 	public function toXML() : String;
 }
 
-@:enum abstract SoapLogType(String) to String {
+@:enum abstract SoapLogType(String) from String to String {
 	var received = "received";
 	var replied = "replied";
 }
