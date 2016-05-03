@@ -14,7 +14,7 @@ typedef DatabaseOptions = {
 	?promise : Dynamic
 }
 
-typedef Aqb = Either<String, { function toAQL() : String }>;
+typedef Aqb = Either<String, { function toAQL() : String; }>;
 
 extern class Database
 implements npm.Package.RequireNamespace<"arangojs", "^4.3.0">
