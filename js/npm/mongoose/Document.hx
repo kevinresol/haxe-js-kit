@@ -7,7 +7,7 @@ typedef DocumentToObjectOptions<T, M> = {
 	?getters : Bool,
 	?virtuals : Bool,
 	?minimize : Bool,
-	?transform : T->M
+	?transform : T->Dynamic->Dynamic->M, // function(originalDoc, transformedObj, options)
 }
 
 extern class Document<T>
