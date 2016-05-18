@@ -342,7 +342,7 @@ class Mongoose {
 		switch(type.expr){
 			case EArrayDecl([v]):
 				if( f.meta.has(':ref') ){
-					var type = macro {type:$v};
+					var type = macro {$typeKey:$v};
 					expr = macro [$type];
 					switch( type.expr ){
 						case EObjectDecl(f) :
