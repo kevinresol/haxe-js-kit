@@ -14,7 +14,7 @@ typedef DatabaseOptions = {
 	?promise : Dynamic
 }
 
-typedef Aqb = String;
+typedef Aqb = Either<String, { function toAQL() : String; }>;
 
 extern class Database
 implements npm.Package.RequireNamespace<"arangojs", "^4.3.0">
@@ -59,6 +59,8 @@ implements npm.Package.RequireNamespace<"arangojs", "^4.3.0">
 	// Queries
 	// aqlQuery macro
 
+        @:overload(function<T>(query : { query: Either<String, Aqb>, ?bindVars : {} }, opts : {}, cb : ArangoCallback<Cursor<T>>) : Void {})
+	@:overload(function<T>(query : { query: Either<String, Aqb>, ?bindVars : {} }, cb : ArangoCallback<Cursor<T>>) : Void {})
 	@:overload(function<T>(query : Either<String, Aqb>, bindVars : {}, opts : {}, cb : ArangoCallback<Cursor<T>>) : Void {})
 	@:overload(function<T>(query : Either<String, Aqb>, bindVars : {}, cb : ArangoCallback<Cursor<T>>) : Void {})
 	public function query<T>(query : Either<String, Aqb>, cb : ArangoCallback<Cursor<T>>) : Void;
