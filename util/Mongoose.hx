@@ -175,23 +175,26 @@ class Mongoose {
                 }
             }
         }
-        
         var typeKey = "type";
+        var post = macro null;
         switch(schemaOptions.expr) {
             case EObjectDecl(fields): 
-                var typeKeyField = Lambda.find(fields, function(f) return f.field == 'typeKey');
-                if(typeKeyField == null) {
-                    fields.push({field: 'typeKey', expr: macro $v{typeKey}});
-                } else {
-                    typeKey = switch(typeKeyField.expr.expr) {
-                        case EConst(CString(s)): s;
+                switch Lambda.find(fields, function(f) return f.field == 'typeKey') {
+                    case null: fields.push({field: 'typeKey', expr: macro $v{typeKey}});
+                    case v: switch v.expr.expr {
+                        case EConst(CString(s)): typeKey = s;
                         default: throw "typeKey should be string literal";
                     }
+                }
+                switch Lambda.find(fields, function(f) return f.field == 'post') {
+                    case null: // do nothing
+                    case v: 
+                        post = v.expr;
+                        fields.remove(v);
                 }
                     
             default:
         }
-        
 
 		switch(modelDecl){
 			case TAnonymous( a ):
@@ -249,6 +252,7 @@ class Mongoose {
 										case _ :
 									}
 								}
+								$post;
 							}
 							return _schema;
 
