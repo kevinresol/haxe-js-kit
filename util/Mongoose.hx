@@ -5,10 +5,11 @@ import haxe.macro.Expr;
 import haxe.macro.MacroStringTools;
 import haxe.macro.Type;
 import haxe.macro.TypeTools;
+using haxe.macro.ExprTools;
 
 class Mongoose {
 
-    static inline var SCHEMA_OPTIONS_META = ':schemaOptions';
+	static inline var SCHEMA_OPTIONS_META = ':schemaOptions';
 
 	#if !macro macro #end public static function buildManager( modelType : Expr ){
 		var fields = Context.getBuildFields();
@@ -333,7 +334,15 @@ class Mongoose {
 
 		var type = {
 			pos : f.pos,
-			expr : typeToSchemaType(f.type, typeKey)
+			expr : typeToSchemaType(switch f.meta.extract(':type') {
+				case []: f.type;
+				case [m]:
+					switch m.params {
+						case [e]: try Context.getType(e.toString()) catch(err:Dynamic) Context.error(err, e.pos);
+						default: Context.error('@:type meta expects exactly one parameter', f.pos);
+					}
+				default: Context.error('Multiple @:type meta is not supported', f.pos);
+			} , typeKey)
 		};
 
 		var expr = macro { $typeKey: $type };
@@ -480,6 +489,10 @@ class Mongoose {
 					var val = m.params[0];
 
 					fields.push( { field : mname , expr : macro $val } );
+				
+				case "type":
+					// ignore it
+					
 				default :
 					fields.push( {field : mname , expr : m.params.length == 0 ? macro true : m.params[0] } );
 			}
@@ -512,7 +525,7 @@ class Mongoose {
 						macro js.npm.mongoose.schema.types.ObjectId;
 					default :
 						var sup = i.superClass;
-						if(sup.t.toString() == "js.npm.mongoose.macro.Model"){
+						if(sup != null && sup.t.toString() == "js.npm.mongoose.macro.Model"){
 
 							for( f in i.fields.get() ){
 								 if( f.name == '_id' ){
