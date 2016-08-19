@@ -494,7 +494,7 @@ class Mongoose {
 					// ignore it
 					
 				default :
-					fields.push( {field : mname , expr : m.params.length == 0 ? macro true : m.params[0] } );
+					// fields.push( {field : mname , expr : m.params.length == 0 ? macro true : m.params[0] } );
 			}
 		}
 
